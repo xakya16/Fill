@@ -1,0 +1,57 @@
+def fill(n, blocks):
+    print(blocks)
+    fillblocks = 0
+    start = 0
+    startblock = blocks[start]
+    next_greatest = [0, 0]
+    while start != n:
+        for i in range(start, n - 1):
+            if blocks[i] > blocks[i + 1]:
+                start = i
+                startblock = blocks[start]
+                break
+        else:
+            return fillblocks
+        next_greatest = [blocks[start + 1], start + 1]
+        for i in range(start + 1, n):
+            if blocks[i] >= startblock:
+                for j in range(start + 1, i):
+                    print(j)
+                    print(f"Fillblocks {fillblocks}")
+                    fillblocks = fillblocks + ( startblock - blocks[j] )
+                for j in range(i, n - 1):
+                    if blocks[j] > blocks[j + 1]:
+                        print("Block1")
+                        start = j
+                        startblock = blocks[start]
+                        i = j
+                        next_greatest = [blocks[start + 1], start + 1]
+                        break
+                else:
+                    print(f"Executed1 {i}")
+                    return fillblocks
+                #startblock = blocks[i]
+            if blocks[i] >= next_greatest[0]:
+                print("Block1")
+                next_greatest[0] = blocks[i]
+                next_greatest[1] = i
+        else:
+            for i in range(start + 1, next_greatest[1]):
+                print("Executed")
+                fillblocks = fillblocks + ( next_greatest[0] - blocks[i] )
+            start = next_greatest[1]
+            startblock = blocks[start]
+    return fillblocks
+
+n = int(input("Enter the number of columns"))
+blocks = [ 0 for _ in range(n)]
+for i in range(n):
+    blocks[i] = int(input(f"Enter the height of the {i + 1}th column"))
+print(fill(n, blocks))
+
+
+
+            
+
+
+
