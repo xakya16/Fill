@@ -6,6 +6,8 @@ class column:
         
     def __init__(self, p1, p2):
         self.block = graph.Rectangle(p1, p2)
+        self.block.setFill(self.fillColor)
+        self.block.setOutline(self.outlineColor)
     
     def draw(self, win):
         self.block.draw(win)
@@ -18,6 +20,8 @@ class water:
 
     def __init__(self, p1, p2):
         self.block = graph.Rectangle(p1, p2)
+        self.block.setFill(self.fillColor)
+        self.block.setOutline(self.fillColor)
     
     def draw(self, win):
         self.block.draw(win)
@@ -25,6 +29,16 @@ class water:
     def getBlock(self):
         return self.block
 
+def heightCalculation( blockfill ):
+    n = len(blockfill)
+    maxHeight = blockfill[0][0] + blockfill[0][1]
+    for i in range(n):
+        totalHeight = blockfill[i][0] + blockfill[i][1]
+        if totalHeight > maxHeight:
+            maxHeight = totalHeight
+    return maxHeight
+
+        
 def fill(n, blocks):
     blockGrid = [[blocks[i], 0] for i in range(n)]
     print(blocks)
@@ -39,6 +53,8 @@ def fill(n, blocks):
                 startblock = blocks[start]
                 break
         else:
+            print(blockGrid)
+            figure(blockGrid)
             return fillblocks
         next_greatest = [blocks[start + 1], start + 1]
         for i in range(start + 1, n):
@@ -46,7 +62,7 @@ def fill(n, blocks):
                 for j in range(start + 1, i):
                     print(j)
                     print(f"Fillblocks {fillblocks}")
-                    blockGrid[i][1] = startblock - blocks[j]
+                    blockGrid[j][1] = startblock - blocks[j]
                     fillblocks = fillblocks + ( startblock - blocks[j] )
                 for j in range(i, n - 1):
                     if blocks[j] > blocks[j + 1]:
@@ -58,6 +74,8 @@ def fill(n, blocks):
                         break
                 else:
                     print(f"Executed1 {i}")
+                    print(blockGrid)
+                    figure(blockGrid)
                     return fillblocks
                 #startblock = blocks[i]
             if blocks[i] >= next_greatest[0]:
@@ -71,14 +89,32 @@ def fill(n, blocks):
                 fillblocks = fillblocks + ( next_greatest[0] - blocks[i] )
             start = next_greatest[1]
             startblock = blocks[start]
+    print(blockGrid)
+    figure(blockGrid)
     return fillblocks
 
-def figure( blockfill, maxHeight ):
+def figure( blockfill ):
+    maxHeight = heightCalculation( blockfill )
     width = len(blockfill)
-    columnWidth = 10
-    height = 10
-    win = graph.GraphWin("Figure", width * columnWidth, height * maxHeight )
-    win.setBackground(graph.color_rgb(0, 0, 10))
+    columnWidth = 40
+    height = 40
+    margin = 40
+    baseHeight = height * maxHeight + margin
+    win = graph.GraphWin("Figure", width * columnWidth + 2 * margin, height * maxHeight + margin )
+    win.setBackground(graph.color_rgb(225, 225, 225))
+    base = graph.Line(graph.Point( margin, baseHeight ), graph.Point( width * columnWidth + margin, baseHeight ))    
+    base.draw(win)
+    for i in range(width):
+        if blockfill[i][0] != 0:
+            block = column( graph.Point( i * columnWidth + margin, baseHeight - blockfill[i][0] * height ), graph.Point( ( i + 1 ) * columnWidth + margin, baseHeight ) )
+            block.draw(win)
+        if blockfill[i][1] != 0:
+            fill = water( graph.Point( i * columnWidth + margin, baseHeight - ( height * ( blockfill[i][0] + blockfill[i][1] ) ) ), graph.Point( columnWidth * (i + 1) + margin, baseHeight - height * blockfill[i][0] ) )
+            fill.draw(win)
+    win.getMouse()
+    win.close()
+    
+
 
 
 
